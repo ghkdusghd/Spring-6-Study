@@ -1,0 +1,43 @@
+services:
+    mysql-database:
+        image: mysql:8.0.22
+        platform: linux/amd64
+        container_name: ${MYSQL_HOST}
+        environment:
+            TZ: Asia/Seoul
+            MYSQL_ROOT_USER: ${MYSQL_USER}
+            MYSQL_ROOT_PASSWORD: ${MYSQL_PASSWORD}
+        ports:
+            - "3334:3306"
+        restart: always
+        volumes:
+            - db_data:/var/lib/mysql
+        healthcheck:
+            test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "${MYSQL_USER}", "--password=${MYSQL_PASSWORD}" ]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 30s
+
+    postgres-database:
+        image: 'postgres:17.3-alpine'
+        platform: linux/amd64
+        container_name: ${POSTGRES_HOST}
+        ports:
+            - "5432:5432"
+        environment:
+            TZ: Asia/Seoul
+            POSTGRES_USER: ${POSTGRES_USER}
+            POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+            POSTGRES_DB: ${POSTGRES_DB}
+        volumes:
+            - db_data:/var/lib/postgres/data
+        restart: always
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -h localhost -U ${POSTGRES_USER} -d ${POSTGRES_DB} -q"]
+            interval: 10s
+            timeout: 5s
+            retries: 3
+            start_period: 30s
+volumes:
+    db_data:

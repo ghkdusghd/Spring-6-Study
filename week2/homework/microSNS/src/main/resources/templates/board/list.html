@@ -1,0 +1,25 @@
+<!-- templates/boardEntity/list.html -->
+<div xmlns:th="http://www.thymeleaf.org" th:fragment="content" class="container">
+    <h1>게시글 목록</h1>
+    <a th:href="@{/board/new}">새 글 쓰기</a>
+
+    <table>
+        <thead>
+        <tr>
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성자</th>
+            <th>작성일</th>
+        </tr>
+        </thead>
+        <tbody id="board-table-body">
+        <!-- 게시글 row가 JS로 동적 추가됨 -->
+        </tbody>
+    </table>
+
+    <div id="loading" style="text-align:center; padding: 1rem; display: none;">로딩 중...</div>
+</div>
+
+<th:block th:fragment="script">
+    <script th:src="@{/js/infinite-scroll.js}"></script>
+</th:block>

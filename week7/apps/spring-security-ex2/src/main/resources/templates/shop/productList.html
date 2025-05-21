@@ -1,0 +1,116 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8" />
+    <title>상품 목록</title>
+    <style>
+        /* 전체 레이아웃 기본 설정 */
+        html, body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        body {
+            padding: 2rem;
+        }
+        h1 {
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        /* 사용자 인사 및 로그아웃 버튼 */
+        .user-info {
+            margin-bottom: 1.5rem;
+        }
+        .user-info form {
+            display: inline;
+        }
+        .user-info input[type="submit"] {
+            margin-left: 1rem;
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #e74c3c;
+            color: #fff;
+            cursor: pointer;
+        }
+        .user-info input[type="submit"]:hover {
+            background-color: #c0392b;
+        }
+
+        /* 테이블 스타일링 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            font-weight: 600;
+        }
+        tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+        tr:hover {
+            background-color: #f0f8ff;
+        }
+
+        /* 상품명 링크 스타일 */
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="user-info" sec:authorize="isAuthenticated()">
+    안녕하세요：<span sec:authentication="name"></span>님
+    <form th:action="@{/logout}" method="post">
+        <input type="submit" value="로그아웃"/>
+    </form>
+</div>
+
+<h1>상품 목록</h1>
+<table>
+    <tr>
+        <th>상품ID</th>
+        <th>상품명</th>
+        <th>가격</th>
+        <th>재고수량</th>
+        <!-- ADMIN 전용 삭제 컬럼 헤더 -->
+        <th sec:authorize="hasRole('ADMIN')">삭제</th>
+    </tr>
+    <tr th:each="prod : ${productList}">
+        <td th:text="${prod.id}">1</td>
+        <td>
+            <a th:href="@{/shop/display-update-form(productId=${prod.id})}"
+               th:text="${prod.name}">상품명</a>
+        </td>
+        <td>
+            <span th:text="${#numbers.formatDecimal(prod.price, 0, 'COMMA', 2, 'POINT')}">0</span>원
+        </td>
+        <td th:text="${prod.stock}">0</td>
+        <!-- ADMIN 권한일 때만 삭제 링크 보이기 -->
+        <td sec:authorize="hasRole('MANAGER')">
+            <a th:href="@{/shop/delete(productId=${prod.id})}"
+               class="btn-delete"
+               onclick="return confirm('정말 삭제하시겠습니까?');">
+                삭제
+            </a>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
